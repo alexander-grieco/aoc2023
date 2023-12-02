@@ -37,9 +37,7 @@ fn power_min_cubes(game_info: &str) -> i32 {
         .flat_map(|game| game.split(","))
         .filter_map(|info| {
             let (num, color) = info.trim().split_once(" ").unwrap();
-            let num = num.parse::<i32>().unwrap();
-            let color = color.chars().nth(0).unwrap();
-            Some((num, color))
+            Some((num.parse::<i32>().unwrap(), color.chars().nth(0).unwrap()))
         })
         .fold(
             (0, 0, 0),
