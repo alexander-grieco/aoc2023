@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 num = "0.4.1"
+num-traits = "0.2.17"
 phf = { version = "0.11.2", features = ["macros"] }
 regex = "1.10.2"
