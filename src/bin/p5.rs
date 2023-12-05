@@ -75,31 +75,37 @@ fn main() {
     let binding = fs::read_to_string("inputs/p5.txt").unwrap();
     let (seeds, maps) = binding.split_once("\n\n").unwrap();
 
-    let seed_vec: Vec<_> = get_seed_ranges(&get_seeds(seeds))
-        .into_iter()
-        .collect::<HashSet<_>>()
-        .into_iter()
-        .collect();
+    let seed_vec: Vec<_> = get_seed_ranges(&get_seeds(seeds));
     let mut map_vec: Vec<_> = maps.split("\n\n").map(parse_maps).collect::<Vec<_>>();
     map_vec.reverse();
 
-    let min = (0..std::u64::MAX)
+    // Loop over all possible locations
+    let min = (0..std::u32::MAX)
         .into_iter()
         .find(|loc| {
-            let &(mut val) = loc;
+            let mut val = *loc as u64;
+
+            // print loc because this can take a while and it's nice to see progress
             println!("loc: {}", loc);
+
+            // Find the starting map location if working through the maps backwards
             let starting_loc = map_vec.iter().fold(val, |_acc, mapped| {
                 mapped.iter().any(|entry| {
                     let start = entry[0];
                     let end = entry[0] + entry[2];
                     if val >= start && val < end {
+                        // If value is in map, we know what it's mapped value will be
                         val = val + entry[1] - entry[0];
                         return true;
                     }
+                    // Value is not in map, it stays the same value
                     return false;
                 });
                 return val;
             });
+            // Go through range of seeds in seed vault, if starting map value is in one of the
+            // ranges, then we have found our minimum location value that is possible given the
+            // inputs. Given problem statement and input, this should always return eventually
             seed_vec.iter().any(|seed| {
                 if starting_loc >= seed.0 && starting_loc < seed.1 {
                     return true;
