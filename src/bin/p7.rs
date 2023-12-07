@@ -62,10 +62,6 @@ fn main() {
         })
         .collect::<Vec<_>>();
     input.sort_by_key(|&(hand, _)| hand);
-    //println!("{:?}", input);
-    //for (hand, _) in input.iter() {
-    //    println!("{:?}", hand);
-    //}
 
     let tot = input.into_iter().enumerate().fold(0, |acc, (i, (_, bid))| {
         let score = (i + 1) * bid;
