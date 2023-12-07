@@ -10,25 +10,33 @@ KTJJT 220
 QQQJA 483"
 }
 
+// Calculate the hand_rank of each hand
+// Jokers are represented by 'J' and are wildcards
 fn determine_hand_rank(hand: &str) -> HandRank {
-    let mut chars: Vec<char> = hand.chars().collect();
-    chars.sort();
+    let chars: Vec<char> = hand.chars().collect();
     let mut counts = [0; 128];
     let mut jokers = 0;
     for c in chars {
         match c {
-            'J' => jokers += 1,
+            'J' => {
+                jokers += 1;
+                // If there are 4 or more jokers, then the result is 5 of a kind
+                if jokers > 3 {
+                    return HandRank::FiveOfAKind;
+                }
+            }
+            // Add character to  counts array
             _ => counts[c as usize] += 1,
         }
     }
     let mut final_counts: Vec<usize> = counts.into_iter().filter(|&c| c != 0).collect();
     final_counts.sort();
-    if jokers == 5 {
-        return HandRank::FiveOfAKind;
-    }
-    if final_counts.len() != 0 {
-        let idx = final_counts.len() - 1;
-        final_counts.get_mut(idx).map(|c| *c += jokers);
+    match jokers {
+        0 => {}
+        _ => {
+            let idx = final_counts.len() - 1;
+            final_counts.get_mut(idx).map(|c| *c += jokers);
+        }
     }
     match final_counts.as_slice() {
         [5] => HandRank::FiveOfAKind,
@@ -41,6 +49,7 @@ fn determine_hand_rank(hand: &str) -> HandRank {
     }
 }
 
+// Take input string and return a Hand object with hand_rank
 fn parse_hand(input: &str) -> Hand {
     let mut cards = [Card::Value('0'); 5];
     for (i, c) in input.chars().enumerate() {
@@ -52,6 +61,7 @@ fn parse_hand(input: &str) -> Hand {
 
 fn main() {
     let binding = fs::read_to_string("inputs/p7.txt").unwrap();
+    // map input to a vector of Hands and their bid value
     let mut input = binding
         .lines()
         .map(|line| {
@@ -61,8 +71,11 @@ fn main() {
             (hand, bid)
         })
         .collect::<Vec<_>>();
+
+    // Sort by hand_rank
     input.sort_by_key(|&(hand, _)| hand);
 
+    // Iterate over array and fold into the sum of bid multiplied by hand rank
     let tot = input.into_iter().enumerate().fold(0, |acc, (i, (_, bid))| {
         let score = (i + 1) * bid;
         acc + score
