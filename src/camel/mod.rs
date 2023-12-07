@@ -62,7 +62,7 @@ pub mod cards {
     }
 
     impl Ord for Hand {
-        fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        fn cmp(&self, other: &Self) -> Ordering {
             self.partial_cmp(other).unwrap()
         }
     }
