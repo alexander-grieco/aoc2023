@@ -1,4 +1,4 @@
-use num::integer::gcd;
+use num::Integer;
 use std::{
     collections::{HashMap, HashSet},
     fs,
@@ -76,10 +76,10 @@ fn main() {
         }
     });
 
-    // Calculate the LCD of all the numbers in nums. This is the answer
-    let mut result = 1;
+    // Calculate the LCM of all the numbers in nums. This is the answer
+    let mut result = 1 as u64;
     for &num in nums.iter() {
-        result = (result * num) / gcd(result, num);
+        result = result.lcm(&num);
     }
 
     println!("Result: {:?}", result);
